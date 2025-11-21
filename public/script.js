@@ -298,19 +298,19 @@ document.addEventListener('DOMContentLoaded', async () => {
             // validation: name required
             const nameField = myForm.querySelector('#name')
             if (!nameField.checkValidity()) {
-                alert('Please provide a title/name for the entry.')
+                        showAlert('Please provide a title/name for the entry.')
                 return
             }
             // date required
             const dateField = myForm.querySelector('#date')
             const dateVal = dateField ? dateField.value : ''
             if (!dateVal) {
-                alert('Please choose a date for the outfit.')
+                        showAlert('Please choose a date for the outfit.')
                 return
             }
             // photo required (for both new entries and edits — edits should preserve existing photoDataUrl)
             if (!imageDataUrl) {
-                alert('Please upload a photo for the outfit.')
+                        showAlert('Please upload a photo for the outfit.')
                 return
             }
 
@@ -379,10 +379,10 @@ const createItem = async (myData) => {
                 try {
                     const err = await response.json()
                     console.error('Validation error:', err)
-                    alert('Save failed: Missing required fields. Please check photo, date, and title.')
+                    showAlert('Save failed: Missing required fields. Please check photo, date, and title.')
                 } catch (e) {
                     console.error('Save failed with status 400')
-                    alert('Save failed: missing required fields.')
+                    showAlert('Save failed: missing required fields.')
                 }
                 return
             }
@@ -390,10 +390,10 @@ const createItem = async (myData) => {
             try {
                 const errBody = await response.text()
                 console.error('Server responded with error:', response.status, errBody)
-                alert('Server error: ' + response.status + '\nSee console for details.')
+                showAlert('Server error: ' + response.status + '\nSee console for details.')
             } catch (e) {
                 console.error('Server responded with status', response.status)
-                alert('Server error: ' + response.status)
+                showAlert('Server error: ' + response.status)
             }
             return
         }
@@ -411,6 +411,44 @@ const createItem = async (myData) => {
         console.error(err)
     }
 } // end of save function
+
+// Generic modal alert using the page's confirm modal markup
+function showAlert(message) {
+    return new Promise(resolve => {
+        const modal = document.getElementById('confirmModal')
+        const msg = document.getElementById('confirmMessage')
+        const list = document.getElementById('confirmList')
+        const cancel = document.getElementById('confirmCancel')
+        const ok = document.getElementById('confirmOk')
+        if (!modal || !msg || !ok) {
+            // fallback to native alert
+            alert(message)
+            return resolve()
+        }
+        msg.textContent = message
+        list.innerHTML = ''
+        // Hide cancel and change confirm label to OK
+        cancel.style.display = 'none'
+        const prevText = ok.textContent
+        ok.textContent = 'OK'
+        modal.style.display = 'flex'
+        modal.setAttribute('aria-hidden', 'false')
+
+        function cleanup() {
+            modal.style.display = 'none'
+            modal.setAttribute('aria-hidden', 'true')
+            cancel.style.display = ''
+            ok.textContent = prevText
+            cancel.removeEventListener('click', onCancel)
+            ok.removeEventListener('click', onOk)
+            resolve()
+        }
+        function onCancel() { cleanup() }
+        function onOk() { cleanup() }
+        cancel.addEventListener('click', onCancel)
+        ok.addEventListener('click', onOk)
+    })
+}
 
 
 // fetch items from API endpoint and populate the content div

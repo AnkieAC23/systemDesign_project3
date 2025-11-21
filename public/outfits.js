@@ -100,6 +100,42 @@ function showConfirm(message, items=[]) {
   })
 }
 
+// showAlert: use the existing confirm modal UI but present a single-OK dialog
+function showAlert(message) {
+  return new Promise(resolve => {
+    const modal = document.getElementById('confirmModal')
+    const msg = document.getElementById('confirmMessage')
+    const list = document.getElementById('confirmList')
+    const cancel = document.getElementById('confirmCancel')
+    const ok = document.getElementById('confirmOk')
+    if (!modal || !msg || !ok) {
+      alert(message)
+      return resolve()
+    }
+    msg.textContent = message
+    list.innerHTML = ''
+    cancel.style.display = 'none'
+    const prevText = ok.textContent
+    ok.textContent = 'OK'
+    modal.setAttribute('aria-hidden', 'false')
+    modal.style.display = 'flex'
+
+    function cleanup() {
+      modal.setAttribute('aria-hidden', 'true')
+      modal.style.display = 'none'
+      cancel.style.display = ''
+      ok.textContent = prevText
+      cancel.removeEventListener('click', onCancel)
+      ok.removeEventListener('click', onOk)
+      resolve()
+    }
+    function onCancel() { cleanup() }
+    function onOk() { cleanup() }
+    cancel.addEventListener('click', onCancel)
+    ok.addEventListener('click', onOk)
+  })
+}
+
 async function loadAll() {
   const res = await fetch('/outfits')
   if (!res.ok) return
@@ -116,8 +152,14 @@ async function loadAll() {
   const requested = params.get('date')
   // set currentDate to requested if present, else today or first available
   const today = formatLocalYYYYMMDD(new Date())
-  if (requested) currentDate = requested
-  else currentDate = availableDates.includes(today) ? today : (availableDates[0] || today)
+  if (requested) {
+    currentDate = requested
+  } else {
+    // Prefer today's date if any outfits exist for today; otherwise fall back
+    // to the most recent available date (latest) so users see the newest entries.
+    if (availableDates.includes(today)) currentDate = today
+    else currentDate = availableDates.length ? availableDates[availableDates.length - 1] : today
+  }
   datePicker.value = currentDate
   renderForDate(currentDate)
   // displayDate element removed per UX request
@@ -204,13 +246,13 @@ document.addEventListener('keydown', (e) => {
 deleteBtn.addEventListener('click', async () => {
   if (!currentDate) return
   const matches = outfits.filter(o => isoDateOnly(o.date) === currentDate)
-  if (!matches.length) return alert('No outfits to delete for this date.')
+  if (!matches.length) return showAlert('No outfits to delete for this date.')
   if (matches.length === 1) {
     const picked = await showConfirm(`Delete "${matches[0].title || 'Untitled'}" for ${currentDate}?`)
     if (!picked) return
     const res = await fetch(`/outfits/${matches[0].id}`, { method: 'DELETE' })
     if (res.ok) { await loadAll(); renderForDate(currentDate) }
-    else alert('Delete failed')
+    else showAlert('Delete failed')
     return
   }
   // multiple: show modal list
@@ -218,12 +260,12 @@ deleteBtn.addEventListener('click', async () => {
   if (!picked) return
   const res = await fetch(`/outfits/${picked.id}`, { method: 'DELETE' })
   if (res.ok) { await loadAll(); renderForDate(currentDate) }
-  else alert('Delete failed')
+  else showAlert('Delete failed')
 })
 
 editBtn.addEventListener('click', async () => {
   const matches = outfits.filter(o => isoDateOnly(o.date) === currentDate)
-  if (matches.length === 0) return alert('No outfit to edit for this date.')
+  if (matches.length === 0) return showAlert('No outfit to edit for this date.')
   if (matches.length === 1) {
     window.location.href = `/index.html?editId=${encodeURIComponent(matches[0].id)}&date=${encodeURIComponent(currentDate)}`
     return
