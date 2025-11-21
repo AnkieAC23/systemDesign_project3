@@ -32,9 +32,19 @@ router.post('/data', async (req, res) => {
 router.post('/outfits', async (req, res) => {
     try {
         const payload = req.body || {}
+        // Normalize incoming date values: if the client sent a date-only string
+        // like 'YYYY-MM-DD', treat it as UTC midnight for consistent storage.
+        const normalizeDate = (d) => {
+            if (!d) return null
+            if (typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d)) {
+                return new Date(d + 'T00:00:00Z')
+            }
+            return new Date(d)
+        }
+
         const data = {
             photoURL: payload.image || payload.photoURL || null,
-            date: payload.date ? new Date(payload.date) : null,
+            date: payload.date ? normalizeDate(payload.date) : null,
             title: payload.name || payload.title || null,
             brands: payload.brands || null,
             occasion: payload.occasion || null,
@@ -117,7 +127,14 @@ router.put('/outfits/:id', async (req, res) => {
         if (payload.brands !== undefined) data.brands = payload.brands
         if (payload.occasion !== undefined) data.occasion = payload.occasion
         if (payload.rating !== undefined) data.rating = payload.rating
-        if (payload.date !== undefined) data.date = payload.date ? new Date(payload.date) : null
+        if (payload.date !== undefined) {
+            // If date was sent as YYYY-MM-DD, interpret it as UTC midnight.
+            if (typeof payload.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(payload.date)) {
+                data.date = new Date(payload.date + 'T00:00:00Z')
+            } else {
+                data.date = payload.date ? new Date(payload.date) : null
+            }
+        }
 
         const updated = await prisma[model].update({ where: { id }, data })
         res.send(updated)

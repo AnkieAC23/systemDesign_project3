@@ -350,8 +350,8 @@ const createItem = async (myData) => {
         if (method === 'PUT') {
             payload = {}
             if (myData.name !== undefined) payload.title = myData.name
-            // ensure date is sent as a full datetime string (local midnight)
-            if (myData.date !== undefined) payload.date = myData.date ? (myData.date + 'T00:00:00') : null
+            // send date as YYYY-MM-DD (server will normalize to UTC midnight)
+            if (myData.date !== undefined) payload.date = myData.date ? myData.date : null
             // include brands and rating even if empty so server will update them
             payload.brands = Array.isArray(myData.brands) ? myData.brands : (myData.brands ? myData.brands : [])
             payload.occasion = myData.occasion !== undefined ? myData.occasion : null
