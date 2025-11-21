@@ -22,37 +22,46 @@ function isoDateOnly(dt) {
   if (typeof dt === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dt)) return dt
   const d = new Date(dt)
   if (isNaN(d)) return null
-  return formatLocalYYYYMMDD(d)
+  // Use UTC components so stored UTC-midnight values map to the intended calendar day
+  const y = d.getUTCFullYear()
+  const m = String(d.getUTCMonth() + 1).padStart(2, '0')
+  const day = String(d.getUTCDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
 }
 
 function formatLocalYYYYMMDD(d) {
-  // Return YYYY-MM-DD using local date components to avoid UTC shifts
+  // Keep a UTC-based formatter for consistency with stored dates
   if (!(d instanceof Date)) d = new Date(d)
   if (isNaN(d)) return null
-  const y = d.getFullYear()
-  const m = String(d.getMonth() + 1).padStart(2, '0')
-  const day = String(d.getDate()).padStart(2, '0')
+  const y = d.getUTCFullYear()
+  const m = String(d.getUTCMonth() + 1).padStart(2, '0')
+  const day = String(d.getUTCDate()).padStart(2, '0')
   return `${y}-${m}-${day}`
 }
 
 function formatLongDate(dateStr) {
   if (!dateStr) return ''
-  // Ensure we interpret date-only strings as local midnight to avoid shifting
-  const parse = (s) => {
-    if (typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s)) return new Date(s + 'T00:00:00')
-    return new Date(s)
+  // Parse stored values and display the calendar date using UTC so we
+  // don't accidentally show the previous day in timezones behind UTC.
+  let d
+  if (typeof dateStr === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+    d = new Date(dateStr + 'T00:00:00Z')
+  } else {
+    d = new Date(dateStr)
   }
-  const d = parse(dateStr)
   if (isNaN(d)) return dateStr
-  const opts = { year: 'numeric', month: 'long', day: 'numeric' }
+  const opts = { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' }
   return d.toLocaleDateString(undefined, opts)
 }
 
 function shiftDateBy(dateStr, days) {
-  // dateStr is expected as YYYY-MM-DD; parse as local midnight then shift
-  const base = dateStr && /^\d{4}-\d{2}-\d{2}$/.test(dateStr) ? new Date(dateStr + 'T00:00:00') : (dateStr ? new Date(dateStr) : new Date())
-  base.setDate(base.getDate() + days)
-  return formatLocalYYYYMMDD(base)
+  // dateStr is expected as YYYY-MM-DD; parse as UTC midnight then shift using UTC methods
+  const base = dateStr && /^\d{4}-\d{2}-\d{2}$/.test(dateStr) ? new Date(dateStr + 'T00:00:00Z') : (dateStr ? new Date(dateStr) : new Date())
+  base.setUTCDate(base.getUTCDate() + days)
+  const y = base.getUTCFullYear()
+  const m = String(base.getUTCMonth() + 1).padStart(2, '0')
+  const day = String(base.getUTCDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
 }
 
 function showConfirm(message, items=[]) {
