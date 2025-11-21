@@ -41,12 +41,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (nameField) nameField.value = item.title || item.name || ''
                 const dateField = document.querySelector('#date')
                 if (dateField && item.date) {
-                    // parse returned date and set value using local components to avoid timezone shift
+                    // parse returned date and set value using UTC components to avoid off-by-one shifts
+                    // Server may store dates as UTC midnight; using UTC getters preserves the intended calendar day.
                     const d = new Date(item.date)
                     if (!isNaN(d)) {
-                        const y = d.getFullYear()
-                        const m = String(d.getMonth() + 1).padStart(2, '0')
-                        const day = String(d.getDate()).padStart(2, '0')
+                        const y = d.getUTCFullYear()
+                        const m = String(d.getUTCMonth() + 1).padStart(2, '0')
+                        const day = String(d.getUTCDate()).padStart(2, '0')
                         dateField.value = `${y}-${m}-${day}`
                     } else {
                         // fallback to slicing if it's already a YYYY-MM-DD string
