@@ -4,11 +4,10 @@ import express from 'express'
 // Initialize Express app
 const app = express()
 
+// Define root redirect to `home.html` before static middleware so '/' doesn't auto-serve index.html
+app.get('/', (req, res) => { res.redirect('/home.html') })
 // Serve static files from /public folder (useful when running Node locally, optional on Vercel).
 app.use(express.static('public'))
-// Define index.html as the root explicitly (useful on Vercel, optional when running Node locally).
-// Serve the project's `home.html` as the site root so users land on the Home page
-app.get('/', (req, res) => { res.redirect('/home.html') })
 
 // Enable express to parse JSON data
 app.use(express.json())
