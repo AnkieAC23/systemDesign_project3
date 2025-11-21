@@ -28,16 +28,44 @@ body {
     width: 100%;
     max-width: 100%;
 }
-.login-button {
-    /* place above the banner and visible */
+.home-button {
     position: fixed;
-    right: 2rem;
     top: 1rem;
+    left: 1rem;
     z-index: 1000;
-    background: #09273a; /* dark button */
-    color: white; /* light text */
-    padding: 0.5rem 0.9rem;
-    border-radius: 0.5rem;
+    background: rgba(9,39,58,0.06);
+    color: #09273a;
+    padding: 0.45rem 0.6rem;
+    border-radius: 0.45rem;
+    text-decoration: none;
+    font-weight: 700;
+}
+.profile-button {
+    position: fixed;
+    top: 1rem;
+    right: 2rem;
+    z-index: 1000;
+    background: #09273a; /* match CTA */
+    color: white;
+    padding: 0.6rem 1rem;
+    border-radius: 0.6rem;
+    text-decoration: none;
+    font-weight: 700;
+}
+.profile-button:hover {
+    background-color: #072033;
+}
+
+/* Close button on index page */
+.close-button {
+    position: fixed;
+    right: 1.25rem;
+    top: 0.75rem;
+    z-index: 1001;
+    background: rgba(9,39,58,0.08);
+    color: #09273a;
+    padding: 0.4rem 0.6rem;
+    border-radius: 50%;
     text-decoration: none;
     font-weight: 700;
 }
@@ -431,6 +459,28 @@ form {
 .side-nav.left { left: 0 }
 .side-nav.right { right: 0 }
 .add-outfit-btn { position: fixed; right: 1.5rem; bottom: 1.5rem; background: #09273a; color: white; padding: 0.8rem 1rem; border-radius: 0.6rem; text-decoration: none; font-weight: 700 }
+
+/* Modal styles */
+.modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.25);
+    z-index: 2000;
+}
+.modal-content {
+    background: white;
+    padding: 1rem;
+    border-radius: 0.6rem;
+    width: min(640px, 92%);
+    box-shadow: 0 8px 30px rgba(9,39,58,0.12);
+}
+.modal-actions { display:flex; justify-content:flex-end; gap:0.5rem; margin-top:1rem }
+.modal .danger { background: #b21e1e; color: white; padding: 0.5rem 0.8rem; border-radius: 0.4rem; border: 0 }
+.confirm-list { max-height: 220px; overflow:auto; margin-top:0.5rem }
+.confirm-row { margin-bottom:0.5rem }
 
 
 fieldset {

@@ -8,14 +8,14 @@
 </head>
 <body>
   <header class="site-header">
-    <a class="login-button" href="#">Login</a>
+    <a class="home-button" href="home.html" title="Home">🏠</a>
+    <a class="profile-button" href="#" title="Profile">👤</a>
   </header>
 
   <main class="outfits-page">
     <section class="outfits-controls">
       <div class="date-row">
         <input type="date" id="datePicker" />
-        <select id="dateSelect"></select>
         <div class="date-actions">
           <button id="loadDate" title="Load date">➡</button>
           <button id="editEntry" title="Edit entry">✎</button>
@@ -29,6 +29,18 @@
       <div class="side-nav left" id="prevDate">‹</div>
       <div class="side-nav right" id="nextDate">›</div>
     </section>
+
+    <!-- Confirmation modal -->
+    <div id="confirmModal" class="modal" aria-hidden="true">
+      <div class="modal-content">
+        <div id="confirmMessage" class="confirm-message"></div>
+        <div id="confirmList" class="confirm-list"></div>
+        <div class="modal-actions">
+          <button id="confirmCancel">Cancel</button>
+          <button id="confirmOk" class="danger">Confirm</button>
+        </div>
+      </div>
+    </div>
   </main>
 
   <a class="add-outfit-btn" href="index.html">＋ Add an outfit</a>

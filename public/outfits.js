@@ -1,12 +1,16 @@
 // outfits.js — page logic for outfits view
 const datePicker = document.getElementById('datePicker')
-const dateSelect = document.getElementById('dateSelect')
 const loadDateBtn = document.getElementById('loadDate')
 const editBtn = document.getElementById('editEntry')
 const deleteBtn = document.getElementById('deleteEntry')
 const outfitContainer = document.getElementById('outfitContainer')
 const prevDate = document.getElementById('prevDate')
 const nextDate = document.getElementById('nextDate')
+const confirmModal = document.getElementById('confirmModal')
+const confirmMessage = document.getElementById('confirmMessage')
+const confirmList = document.getElementById('confirmList')
+const confirmCancel = document.getElementById('confirmCancel')
+const confirmOk = document.getElementById('confirmOk')
 
 let outfits = []
 let availableDates = [] // array of YYYY-MM-DD strings
@@ -17,6 +21,48 @@ function isoDateOnly(dt) {
   const d = new Date(dt)
   if (isNaN(d)) return null
   return d.toISOString().slice(0,10)
+}
+
+function shiftDateBy(dateStr, days) {
+  const d = dateStr ? new Date(dateStr) : new Date()
+  d.setDate(d.getDate() + days)
+  return d.toISOString().slice(0,10)
+}
+
+function showConfirm(message, items=[]) {
+  return new Promise(resolve => {
+    confirmMessage.textContent = message
+    confirmList.innerHTML = ''
+    if (items && items.length) {
+      // render radio list
+      items.forEach((it, i) => {
+        const id = `confirm_item_${i}`
+        const row = document.createElement('div')
+        row.className = 'confirm-row'
+        row.innerHTML = `<label><input type="radio" name="confirmPick" value="${i}" ${i===0? 'checked' : ''}/> ${it.title || 'Untitled'}</label>`
+        confirmList.appendChild(row)
+      })
+    }
+    confirmModal.setAttribute('aria-hidden', 'false')
+    confirmModal.style.display = 'flex'
+
+    function cleanup(result) {
+      confirmModal.setAttribute('aria-hidden', 'true')
+      confirmModal.style.display = 'none'
+      confirmCancel.removeEventListener('click', onCancel)
+      confirmOk.removeEventListener('click', onOk)
+      resolve(result)
+    }
+    function onCancel() { cleanup(null) }
+    function onOk() {
+      if (!items || items.length===0) return cleanup(true)
+      const selected = confirmList.querySelector('input[name="confirmPick"]:checked')
+      const idx = selected ? Number(selected.value) : 0
+      cleanup(items[idx])
+    }
+    confirmCancel.addEventListener('click', onCancel)
+    confirmOk.addEventListener('click', onOk)
+  })
 }
 
 async function loadAll() {
@@ -30,34 +76,22 @@ async function loadAll() {
     if (d) dates.add(d)
   })
   availableDates = Array.from(dates).sort()
-  renderDateSelect()
-  // set currentDate to selected or today
+  // read optional ?date= param and prefer it if present
+  const params = new URLSearchParams(window.location.search)
+  const requested = params.get('date')
+  // set currentDate to requested if present, else today or first available
   const today = new Date().toISOString().slice(0,10)
-  currentDate = availableDates.includes(today) ? today : (availableDates[0] || today)
+  if (requested) currentDate = requested
+  else currentDate = availableDates.includes(today) ? today : (availableDates[0] || today)
   datePicker.value = currentDate
-  dateSelect.value = currentDate
   renderForDate(currentDate)
 }
 
-function renderDateSelect() {
-  dateSelect.innerHTML = ''
-  // add blank option
-  const opt = document.createElement('option')
-  opt.value = ''
-  opt.textContent = '-- select a date --'
-  dateSelect.appendChild(opt)
-  availableDates.forEach(d => {
-    const o = document.createElement('option')
-    o.value = d
-    o.textContent = d
-    dateSelect.appendChild(o)
-  })
-}
+// no dropdown to render; date selection is via date input
 
 function renderForDate(dateStr) {
   currentDate = dateStr
   datePicker.value = dateStr
-  dateSelect.value = dateStr
   outfitContainer.querySelectorAll('.outfit-card, .empty-card').forEach(n => n.remove())
 
   const matches = outfits.filter(o => isoDateOnly(o.date) === dateStr)
@@ -108,62 +142,61 @@ function gotoNextDate() {
 }
 
 loadDateBtn.addEventListener('click', () => {
-  const val = datePicker.value || dateSelect.value
+  const val = datePicker.value
   if (!val) return
-  // if date is new, add it to availableDates
   if (!availableDates.includes(val)) availableDates.push(val)
   availableDates.sort()
-  renderDateSelect()
+  // update URL to include ?date= so user can share/bookmark
+  const url = '/outfits.html?date=' + encodeURIComponent(val)
+  history.pushState({}, '', url)
   renderForDate(val)
-})
-
-dateSelect.addEventListener('change', (e) => {
-  const v = e.target.value
-  if (v) renderForDate(v)
 })
 
 datePicker.addEventListener('change', (e) => {
   const v = e.target.value
-  if (v) dateSelect.value = v
+  if (v) {
+    // just update picker; load is via submit button
+  }
 })
 
-prevDate.addEventListener('click', gotoPrevDate)
-nextDate.addEventListener('click', gotoNextDate)
+prevDate.addEventListener('click', () => renderForDate(shiftDateBy(currentDate, -1)))
+nextDate.addEventListener('click', () => renderForDate(shiftDateBy(currentDate, 1)))
 
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'ArrowLeft') gotoPrevDate()
-  if (e.key === 'ArrowRight') gotoNextDate()
+  if (e.key === 'ArrowLeft') renderForDate(shiftDateBy(currentDate, -1))
+  if (e.key === 'ArrowRight') renderForDate(shiftDateBy(currentDate, 1))
 })
 
 deleteBtn.addEventListener('click', async () => {
-  // delete all entries for currentDate (confirm)
   if (!currentDate) return
   const matches = outfits.filter(o => isoDateOnly(o.date) === currentDate)
   if (!matches.length) return alert('No outfits to delete for this date.')
-  if (!confirm(`Delete ${matches.length} outfit(s) for ${currentDate}?`)) return
-  for (const it of matches) {
-    await fetch(`/outfits/${it.id}`, { method: 'DELETE' })
+  if (matches.length === 1) {
+    const picked = await showConfirm(`Delete "${matches[0].title || 'Untitled'}" for ${currentDate}?`)
+    if (!picked) return
+    const res = await fetch(`/outfits/${matches[0].id}`, { method: 'DELETE' })
+    if (res.ok) { await loadAll(); renderForDate(currentDate) }
+    else alert('Delete failed')
+    return
   }
-  await loadAll()
-  alert('Deleted.')
+  // multiple: show modal list
+  const picked = await showConfirm(`Choose an outfit to delete for ${currentDate}:`, matches)
+  if (!picked) return
+  const res = await fetch(`/outfits/${picked.id}`, { method: 'DELETE' })
+  if (res.ok) { await loadAll(); renderForDate(currentDate) }
+  else alert('Delete failed')
 })
 
 editBtn.addEventListener('click', async () => {
-  // If exactly one outfit exists for the date, open an inline editor
   const matches = outfits.filter(o => isoDateOnly(o.date) === currentDate)
   if (matches.length === 0) return alert('No outfit to edit for this date.')
-  if (matches.length > 1) return alert('Multiple outfits found for this date; please select one from the list to edit (not implemented).')
-  const item = matches[0]
-  // Simple prompt-based edit: allow editing title and notes
-  const newTitle = prompt('Edit title', item.title || '')
-  if (newTitle == null) return
-  const newNotes = prompt('Edit notes', item.notes || '')
-  const payload = { title: newTitle, notes: newNotes }
-  const res = await fetch(`/outfits/${item.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
-  if (res.ok) {
-    await loadAll()
-    alert('Updated')
-  } else alert('Update failed')
+  if (matches.length === 1) {
+    window.location.href = `/index.html?editId=${encodeURIComponent(matches[0].id)}&date=${encodeURIComponent(currentDate)}`
+    return
+  }
+  const picked = await showConfirm(`Choose an outfit to edit for ${currentDate}:`, matches)
+  if (!picked) return
+  window.location.href = `/index.html?editId=${encodeURIComponent(picked.id)}&date=${encodeURIComponent(currentDate)}`
 })
 
 // initialize

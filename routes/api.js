@@ -65,6 +65,19 @@ router.get('/outfits', async (req, res) => {
     }
 })
 
+// GET single outfit by id
+router.get('/outfits/:id', async (req, res) => {
+    try {
+        const id = req.params.id
+        const item = await prisma[model].findUnique({ where: { id } })
+        if (!item) return res.status(404).send({ error: 'Not found' })
+        res.send(item)
+    } catch (err) {
+        console.error('GET /outfits/:id error:', err)
+        res.status(500).send({ error: 'Failed to fetch outfit', details: err.message || err })
+    }
+})
+
 
 
 // ----- findMany() with search ------- 

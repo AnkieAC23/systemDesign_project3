@@ -1,6 +1,8 @@
 let readyStatus, notReadyStatus, myForm, contentArea
 
-document.addEventListener('DOMContentLoaded', () => {
+let editId = null
+
+document.addEventListener('DOMContentLoaded', async () => {
     readyStatus = document.querySelector('#readyStatus')
     notReadyStatus = document.querySelector('#notReadyStatus')
     myForm = document.querySelector('#myForm')
@@ -18,6 +20,46 @@ document.addEventListener('DOMContentLoaded', () => {
     let brands = []
     let imageDataUrl = null
     let rating = 0
+
+    // detect editId from query string and populate form if present
+    const params = new URLSearchParams(window.location.search)
+    const maybeEdit = params.get('editId')
+    if (maybeEdit) {
+        editId = maybeEdit
+        try {
+            const res = await fetch('/outfits/' + encodeURIComponent(editId))
+            if (res.ok) {
+                const item = await res.json()
+                // populate fields
+                const nameField = document.querySelector('#name')
+                if (nameField) nameField.value = item.title || item.name || ''
+                const dateField = document.querySelector('#date')
+                if (dateField && item.date) dateField.value = (new Date(item.date)).toISOString().slice(0,10)
+                if (item.brands && Array.isArray(item.brands)) {
+                    brands = item.brands.slice()
+                }
+                previousOcc = item.occasion || null
+                rating = item.rating != null ? Number(item.rating) : 0
+                if (item.notes) {
+                    const notes = document.querySelector('#notes')
+                    if (notes) notes.value = item.notes
+                }
+                if (item.photoURL) {
+                    imageDataUrl = item.photoURL
+                    if (imagePreview) {
+                        imagePreview.innerHTML = ''
+                        const img = document.createElement('img')
+                        img.src = imageDataUrl
+                        imagePreview.appendChild(img)
+                    }
+                }
+                renderTags()
+                updateStars()
+            }
+        } catch (err) {
+            console.error('Failed to load outfit for edit', err)
+        }
+    }
 
     // Image preview
     if (imageInput) {
@@ -241,8 +283,7 @@ document.addEventListener('DOMContentLoaded', () => {
         })
     }
 
-    // Initial data load after DOM is ready
-    getData()
+    // initial data load removed on index page to avoid listing outfits here
 
 })
 
@@ -262,14 +303,10 @@ const createItem = async (myData) => {
         // Let's also add headers to tell the server we're sending JSON
         // The data is sent in serialized form (via JSON.stringify) 
 
-        const response = await fetch('/outfits', {
-            method: "POST",
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(myData)
-        })
+        const method = editId ? 'PUT' : 'POST'
+        const url = editId ? ('/outfits/' + encodeURIComponent(editId)) : '/outfits'
+        const headers = { 'Accept': 'application/json', 'Content-Type': 'application/json' }
+        const response = await fetch(url, { method, headers, body: JSON.stringify(myData) })
         // Check if the response status is OK 
         if (!response.ok) {
             try {
@@ -283,11 +320,11 @@ const createItem = async (myData) => {
         // If all goes well we will recieve back the submitted data
         // along with a new _id field added by MongoDB
         const result = await response.json()
-        alert('Data Sent to MongoDB via API. Details are in the console. To see all persisted data, visit the /outfits endpoint in another tab.');
-        // log the result 
-        console.log(result)
-        // refresh the data list
-        getData()
+        // on success redirect to the outfits page so the user can view the saved or updated entry
+        console.log('Saved/updated', result)
+        const redirectDate = myData && myData.date ? myData.date.slice(0,10) : ''
+        const outUrl = '/outfits.html' + (redirectDate ? ('?date=' + encodeURIComponent(redirectDate)) : '')
+        window.location.href = outUrl
     }
     catch (err) {
         // Log any errors
