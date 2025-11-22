@@ -1,3 +1,4 @@
+// All code generated with the help of GitHub Copilot with minor modifications by Ankie Chen. 
 // outfits.js — page logic for outfits view
 const datePicker = document.getElementById('datePicker')
 const loadDateBtn = document.getElementById('loadDate')
@@ -13,7 +14,7 @@ const confirmCancel = document.getElementById('confirmCancel')
 const confirmOk = document.getElementById('confirmOk')
 
 let outfits = []
-let availableDates = [] // array of YYYY-MM-DD strings
+let availableDates = []
 let currentDate = null
 
 function isoDateOnly(dt) {
@@ -162,7 +163,6 @@ async function loadAll() {
   }
   datePicker.value = currentDate
   renderForDate(currentDate)
-  // displayDate element removed per UX request
 }
 
 // no dropdown to render; date selection is via date input
@@ -176,10 +176,8 @@ function renderForDate(dateStr) {
   if (!matches || matches.length === 0) {
     const empty = document.createElement('div')
     empty.className = 'empty-card'
-    // match the card appearance but with a friendly prompt and a line break
     empty.innerHTML = `<div class="empty-content">Your wardrobe is empty.<br/>Start by adding an outfit!</div>`
     outfitContainer.appendChild(empty)
-    // ensure container background stays transparent so only the card shows the yellow tint
     outfitContainer.style.background = 'transparent'
     return
   }
@@ -275,7 +273,6 @@ editBtn.addEventListener('click', async () => {
   window.location.href = `/index.html?editId=${encodeURIComponent(picked.id)}&date=${encodeURIComponent(currentDate)}`
 })
 
-// initialize
 loadAll()
 
 // Profile dropdown toggle (non-functional Settings / Log Out links)
@@ -310,3 +307,4 @@ if (profileWrapper && profileDropdown) {
 }
 
 export {}
+// All code generated with the help of GitHub Copilot with minor modifications by Ankie Chen. 

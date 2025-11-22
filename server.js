@@ -1,3 +1,4 @@
+// All code generated with the help of GitHub Copilot. 
 // Express is a framework for building APIs and web apps
 // See also: https://expressjs.com/
 import express from 'express'
@@ -24,3 +25,4 @@ const port = 3001
 app.listen(port, () => {
     console.log(`Express is live at http://localhost:${port}`)
 })
+// All code generated with the help of GitHub Copilot. 

@@ -1,3 +1,4 @@
+// All code generated with the help of GitHub Copilot with minor modifications by Ankie Chen. 
 let readyStatus, notReadyStatus, myForm, contentArea
 
 let editId = null
@@ -8,7 +9,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     myForm = document.querySelector('#myForm')
     contentArea = document.querySelector('#content')
 
-    // New form controls
+    // Form controls
     const imageInput = document.getElementById('image')
     const imagePreview = document.getElementById('imagePreview')
     const brandInput = document.getElementById('brandInput')
@@ -484,3 +485,4 @@ const getData = async () => {
     }
 
 }
+// All code generated with the help of GitHub Copilot with minor modifications by Ankie Chen. 

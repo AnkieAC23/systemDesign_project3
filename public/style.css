@@ -1,3 +1,5 @@
+/* All code generated with the help of GitHub Copilot with minor modifications by Ankie Chen. */
+
 body {
 
     height: 100%;
@@ -22,7 +24,7 @@ body {
 
 /* Home banner styles */
 .top-space {
-    height: 80px; /* increased to add more space between login and banner image */
+    height: 80px;
 }
 .site-header {
     position: relative;
@@ -41,18 +43,20 @@ body {
     text-decoration: none;
     font-weight: 700;
 }
+
 .profile-button {
     position: fixed;
     top: 1rem;
     right: 2rem;
     z-index: 1000;
-    background: #09273a; /* match CTA */
+    background: #09273a;
     color: white;
     padding: 0.6rem 1rem;
     border-radius: 0.6rem;
     text-decoration: none;
     font-weight: 700;
 }
+
 .profile-button:hover {
     background-color: #072033;
 }
@@ -86,14 +90,13 @@ body {
     margin-right: -50vw;
 }
 .home-banner::after {
-    /* subtle dark overlay */
     content: '';
     position: absolute;
     inset: 0;
     background: linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0.02));
 }
 .banner-overlay {
-    position: relative; /* above the overlay */
+    position: relative;
     z-index: 2;
     padding-left: var(--banner-left);
     max-width: 60%;
@@ -117,7 +120,7 @@ body {
     font-family: "Minion Pro", Georgia, 'Times New Roman', serif;
     font-weight: 700;
     font-size: 2.5rem;
-    margin-top: 0.8rem; /* add space between 'Welcome to' and 'YOUR' */
+    margin-top: 0.8rem;
     letter-spacing: 0.08em;
 }
 .banner-large .banner-your {
@@ -131,8 +134,8 @@ body {
 .cta-button {
     display: inline-block;
     margin-top: 0.75rem;
-    background: #09273a; /* dark background */
-    color: white; /* light text */
+    background: #09273a;
+    color: white;
     padding: 0.6rem 1rem;
     border-radius: 0.6rem;
     font-weight: 700;
@@ -145,29 +148,28 @@ body {
 
 /* Intro layout: use container padding + left offset variable */
 .intro-section {
-    /* moved closer to the banner, with extra bottom spacing */
-    padding: 1.25rem 0 2rem 0; /* top 1.25rem, bottom 2rem to increase gap to footer */
+    padding: 1.25rem 0 2rem 0;
     padding-left: var(--content-left);
     background: transparent;
     max-width: 60rem;
     color: #09273a;
     text-align: left;
 }
-    /* Make intro paragraph text slightly smaller for better hierarchy */
+
     .intro-inner h2 {
-        margin-bottom: 1rem; /* more space between heading and body text */
+        margin-bottom: 1rem;
     }
 
     .intro-inner p {
         font-size: 1rem;
         line-height: 1.6;
         color: #09273a;
-        margin-top: 1rem; /* increase gap between heading and paragraph */
+        margin-top: 1rem;
     }
 
 /* Footer aligned with banner and intro */
 footer {
-    margin: 0.75rem 0 1.5rem 0; /* move footer slightly higher */
+    margin: 0.75rem 0 1.5rem 0;
     padding-left: var(--content-left);
     color: #09273a;
     font-size: 0.9rem;
@@ -195,7 +197,7 @@ footer {
     display: none;
 }
 .upload-button {
-    background: #09273a; /* match primary */
+    background: #09273a;
     color: white;
     padding: 0.42rem 0.9rem;
     border-radius: 0.5rem;
@@ -225,15 +227,15 @@ footer {
 }
 .meta-top {
     display: flex;
-    gap: 0.35rem; /* bring title and date closer together */
+    gap: 0.35rem;
     align-items: flex-start;
 }
 .name-field {
-    flex: 4; /* extend title input */
+    flex: 4;
 }
 .name-field input { width: 100%; padding: 0.5rem 0.6rem; font-size: 1.05rem }
 .date-field {
-    flex: 1.2; /* date slightly larger to fit on same row */
+    flex: 1.2;
 }
 .date-field input { width: 100%; padding: 0.45rem 0.5rem }
 .meta-mid {
@@ -241,7 +243,7 @@ footer {
     gap: 0.6rem;
 }
 .brands-field {
-    flex: 1.2; /* make brands and occasion similar sizes */
+    flex: 1.2;
 }
 .brands-field input { width: 100%; padding: 0.45rem 0.5rem }
 .occasion-field {
@@ -263,7 +265,7 @@ footer {
 #notes {
     resize: none;
     font-size: 1.02rem;
-    min-height: 200px; /* make personal notes larger */
+    min-height: 200px;
 }
 .notes-row { margin-top: 0.2rem }
 .tags {
@@ -288,13 +290,13 @@ footer {
 .tag {
     background: #e0f2e9;
     color: #09273a;
-    padding: 0.16rem 0.36rem; /* slightly smaller */
+    padding: 0.16rem 0.36rem;
     border-radius: 999px;
     display: inline-flex;
     gap: 0.3rem;
     align-items: center;
     font-weight: 600;
-    font-size: 0.85rem; /* smaller tag text */
+    font-size: 0.85rem;
 }
 .tag button { 
     background: transparent;
@@ -304,7 +306,6 @@ footer {
     font-size: 0.95em;
 }
 
-/* Color coding for tags: occasion = blue-green tint; brand = blue-purple tint */
 .tag.occasion-tag { background: #e6f1f8; color: #09273a }
 .tag.brand-tag { background: #ecefff; color: #09273a }
 .stars { 
@@ -317,7 +318,7 @@ footer {
     background: transparent;
     border: 0;
     cursor: pointer;
-    padding: 0 0.12rem; /* reduce horizontal padding */
+    padding: 0 0.12rem;
     margin: 0;
 }
 .star { color: #09273a; }
@@ -337,12 +338,12 @@ footer {
 
 .occasion-field,
 .brands-field {
-    padding-bottom: 0.08rem; /* reduce visual bottom padding */
-    margin-bottom: 0; /* keep tight to following rows */
+    padding-bottom: 0.08rem;
+    margin-bottom: 0;
 }
 
 .stars {
-    margin-left: 0.45rem; /* nudge stars further right from label */
+    margin-left: 0.45rem;
 }
 .form-actions {
     display: flex;
@@ -357,7 +358,6 @@ h2 {
     align-items: center;
     gap: 1rem;
     margin: auto;
-    /* Titles use Minion Pro Bold from Typekit */
     font-family: "Minion Pro", Georgia, 'Times New Roman', serif;
     font-weight: 700;
 }
@@ -376,11 +376,11 @@ p {
 /* Intro paragraph on the index page */
 .entry-desc {
     text-align: center;
-    color: #666; /* match existing UI grey */
-    font-size: 0.95rem; /* slightly smaller */
-    margin: 0.35rem auto 0.8rem auto; /* pull closer to title */
+    color: #666;
+    font-size: 0.95rem;
+    margin: 0.35rem auto 0.8rem auto;
     max-width: 760px;
-    padding-bottom: 0.6rem; /* extra bottom spacing */
+    padding-bottom: 0.6rem;
 }
 
 nav {
@@ -458,9 +458,9 @@ button.reset:hover {
 main { 
     margin: 0 10vw;
     max-width: 60rem;
-    margin-bottom: 2rem; /* reduced bottom spacing */
+    margin-bottom: 2rem;
     background: transparent;
-    padding: 1rem; /* reduced padding */
+    padding: 1rem;
     border-radius: 0;
     filter: none;
     display: flex;
@@ -485,14 +485,14 @@ form {
 .outfit-container {
     position: relative;
     min-height: 320px;
-    padding: 1rem; /* reduced padding to match other pages */
-    margin-top: -1.25rem; /* move white area higher */
+    padding: 1rem;
+    margin-top: -1.25rem;
     width: 100%;
     margin-left: auto;
     margin-right: auto;
     box-sizing: border-box;
     display: flex;
-    justify-content: center; /* center the visible card area */
+    justify-content: center;
 }
 .outfit-card {
     display: flex;
@@ -511,11 +511,11 @@ form {
     padding: 1.75rem 2rem; /* keep background large but slightly less vertical padding */
     border-radius: 1rem;
     display: flex;
-    gap: 0.35rem; /* bring text much closer to image */
+    gap: 0.35rem;
     box-sizing: border-box;
 }
 .outfit-card .card-left {
-    width: 240px; /* slightly narrower image so text can sit closer */
+    width: 240px;
     flex-shrink: 0;
 }
 .outfit-card .card-left img { width: 240px; height: 240px; object-fit: contain; object-position: left center; border-radius: 0.5rem }
@@ -525,7 +525,7 @@ form {
 .card-rating {
     color: gold;
     margin-bottom: 0.75rem;
-    font-size: 1.6rem; /* slightly smaller star/rating display */
+    font-size: 1.6rem;
     line-height: 1;
     display: inline-block;
     min-width: 120px; /* ensures the rating area has some width */
@@ -540,15 +540,15 @@ form {
     margin: 1rem auto;
     padding: 1.75rem 2rem; /* same inner padding as .outfit-card */
     border-radius: 1rem;
-    background: #fdf2e0; /* yellow tint matching site empty state */
+    background: #fdf2e0;
     border: 1px solid rgba(9,39,58,0.06);
     box-shadow: 0 4px 14px rgba(9,39,58,0.06);
-    display: flex; /* center text both vertically and horizontally */
+    display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
     box-sizing: border-box;
-    min-height: 330px; /* slightly longer so empty card reads as more prominent */
+    min-height: 330px;
 }
 .card-tags { margin-top: 0.5rem }
 .card-tags .card-occasion { margin-bottom: 0.4rem }
@@ -582,7 +582,7 @@ form {
 .profile-dropdown {
     display: none;
     position: fixed;
-    top: 3.6rem; /* just below the icon */
+    top: 3.6rem;
     right: 1.5rem;
     background: white;
     border: 1px solid rgba(9,39,58,0.08);
@@ -633,7 +633,7 @@ form {
 }
 .date-wrapper { display: flex; flex-direction: column; align-items: center; }
 #datePicker {
-    width: 380px; /* longer */
+    width: 380px;
     padding: 0.5rem;
     border-radius: 0.45rem;
     border: 1px solid rgba(9,39,58,0.12);
@@ -666,7 +666,7 @@ form {
     background: rgba(9,39,58,0.06);
 }
 
-/* Star sizing for rating widget - slightly reduced for balance */
+/* Star sizing for rating widget*/
 .star { font-size: 2.0rem }
 
 /* Personal note label styling inside cards */
@@ -681,10 +681,10 @@ form {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 1.6rem; /* smaller arrows */
+    font-size: 1.6rem;
     color: white;
     background: #09273a;
-    padding: 0.45rem 0.6rem; /* smaller pill */
+    padding: 0.45rem 0.6rem;
     border-radius: 0.5rem;
     box-shadow: 0 6px 18px rgba(9,39,58,0.18);
     cursor: pointer;
@@ -821,3 +821,4 @@ select:user-invalid+.validation,
 textarea:user-invalid+.validation {
     display: block;
 }
+/* All code generated with the help of GitHub Copilot with minor modifications by Ankie Chen. */
