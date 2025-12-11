@@ -26,3 +26,14 @@ app.listen(port, () => {
     console.log(`Express is live at http://localhost:${port}`)
 })
 // All code generated with the help of GitHub Copilot. 
+
+//Start of code from Sikkema (2025), https://www.youtube.com/watch?v=TGmxuwR6fNk
+const config = {
+  authRequired: false,
+  auth0Logout: true,
+  secret: process.env.SECRET,
+  baseURL: process.env.BASE_URL,
+  clientID: process.env.CLIENT_ID,
+  issuerBaseURL: process.env.ISSUER_BASE_URL
+};
+//End of code from Sikkema (2025), https://www.youtube.com/watch?v=TGmxuwR6fNk
