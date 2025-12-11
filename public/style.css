@@ -823,10 +823,6 @@ textarea:user-invalid+.validation {
 }
 
 /* Login Page Styles */
-.login-button-container {
-    margin: 1.5rem 0;
-}
-
 .login-container {
     display: flex;
     justify-content: center;

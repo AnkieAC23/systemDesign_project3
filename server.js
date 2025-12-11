@@ -19,6 +19,16 @@ const config = {
 
 // Auth router attaches /login, /logout, and /callback routes to the baseURL
 app.use(auth(config));
+
+// Custom signup route that redirects to Auth0 signup
+app.get('/signup', (req, res) => {
+  res.oidc.login({
+    returnTo: '/outfits.html',
+    authorizationParams: {
+      screen_hint: 'signup'
+    }
+  });
+});
 //End of code from Sikkema (2025), https://www.youtube.com/watch?v=TGmxuwR6fNk
 
 // Define root redirect to `home.html` before static middleware so '/' doesn't auto-serve index.html
