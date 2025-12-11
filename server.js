@@ -2,8 +2,24 @@
 // Express is a framework for building APIs and web apps
 // See also: https://expressjs.com/
 import express from 'express'
+import { auth } from 'express-openid-connect'
+
 // Initialize Express app
 const app = express()
+
+//Start of code from Sikkema (2025), https://www.youtube.com/watch?v=TGmxuwR6fNk
+const config = {
+  authRequired: false,
+  auth0Logout: true,
+  secret: process.env.SECRET,
+  baseURL: process.env.BASE_URL,
+  clientID: process.env.CLIENT_ID,
+  issuerBaseURL: process.env.ISSUER_BASE_URL
+};
+
+// Auth router attaches /login, /logout, and /callback routes to the baseURL
+app.use(auth(config));
+//End of code from Sikkema (2025), https://www.youtube.com/watch?v=TGmxuwR6fNk
 
 // Define root redirect to `home.html` before static middleware so '/' doesn't auto-serve index.html
 app.get('/', (req, res) => { res.redirect('/home.html') })
@@ -25,15 +41,4 @@ const port = 3001
 app.listen(port, () => {
     console.log(`Express is live at http://localhost:${port}`)
 })
-// All code generated with the help of GitHub Copilot. 
-
-//Start of code from Sikkema (2025), https://www.youtube.com/watch?v=TGmxuwR6fNk
-const config = {
-  authRequired: false,
-  auth0Logout: true,
-  secret: process.env.SECRET,
-  baseURL: process.env.BASE_URL,
-  clientID: process.env.CLIENT_ID,
-  issuerBaseURL: process.env.ISSUER_BASE_URL
-};
-//End of code from Sikkema (2025), https://www.youtube.com/watch?v=TGmxuwR6fNk
+// All code generated with the help of GitHub Copilot.
