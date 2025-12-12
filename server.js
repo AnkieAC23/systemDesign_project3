@@ -20,10 +20,14 @@ const config = {
 // Auth router attaches /login, /logout, and /callback routes to the baseURL
 app.use(auth(config));
 
+// Resolve absolute return URLs for production (Auth0 requires allowlisted full URLs)
+const returnToOutfits = `${process.env.BASE_URL}/outfits.html`
+const returnToHome = `${process.env.BASE_URL}/home.html`
+
 // Custom signup route that redirects to Auth0 signup
 app.get('/signup', (req, res) => {
   res.oidc.login({
-    returnTo: '/outfits.html',
+    returnTo: returnToOutfits,
     authorizationParams: {
       screen_hint: 'signup'
     }
@@ -33,14 +37,14 @@ app.get('/signup', (req, res) => {
 // Custom login route that redirects to outfits after authentication
 app.get('/login', (req, res) => {
   res.oidc.login({
-    returnTo: '/outfits.html'
+    returnTo: returnToOutfits
   });
 });
 
 // Custom logout route that redirects to home after logout
 app.get('/logout', (req, res) => {
   res.oidc.logout({
-    returnTo: '/home.html'
+    returnTo: returnToHome
   });
 });
 //End of code from Sikkema (2025), https://www.youtube.com/watch?v=TGmxuwR6fNk
