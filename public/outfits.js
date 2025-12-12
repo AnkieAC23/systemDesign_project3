@@ -275,6 +275,24 @@ editBtn.addEventListener('click', async () => {
 
 loadAll()
 
+// Fetch and display user greeting
+async function displayUserGreeting() {
+  try {
+    const response = await fetch('/user')
+    if (response.ok) {
+      const user = await response.json()
+      const greeting = document.getElementById('outfitGreeting')
+      if (greeting) {
+        greeting.textContent = `Hello, ${user.nickname || user.name || 'User'}`
+      }
+    }
+  } catch (error) {
+    console.log('Could not fetch user info')
+  }
+}
+
+displayUserGreeting()
+
 // Profile dropdown toggle (non-functional Settings / Log Out links)
 const profileWrapper = document.getElementById('profileMenuWrapper')
 const profileDropdown = document.getElementById('profileDropdown')
@@ -304,6 +322,15 @@ if (profileWrapper && profileDropdown) {
   document.addEventListener('keydown', (ev) => {
     if (ev.key === 'Escape') hideProfileDropdown()
   })
+
+  // Handle Log Out click
+  const logOutLink = profileDropdown.querySelector('.dropdown-item:nth-child(2)')
+  if (logOutLink) {
+    logOutLink.addEventListener('click', (ev) => {
+      ev.preventDefault()
+      window.location.href = '/logout'
+    })
+  }
 }
 
 export {}

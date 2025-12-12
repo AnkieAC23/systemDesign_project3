@@ -558,8 +558,7 @@ form {
 
 /* Outfits page nav icons (image buttons) — distinct from the login/profile button style */
 .nav-icon {
-    position: fixed;
-    top: 1rem;
+    position: relative;
     z-index: 1100;
     background: transparent;
     padding: 0.15rem;
@@ -575,8 +574,8 @@ form {
     height: 30px;
     display: block;
 }
-.nav-icon.home-icon { left: 1rem; }
-.nav-icon.profile-icon { right: 1.5rem; }
+.nav-icon.home-icon { }
+.nav-icon.profile-icon { position: fixed; top: 1rem; right: 1.5rem; }
 
 /* Dropdown for profile (matches site palette and simple existing styling) */
 .profile-dropdown {
@@ -822,106 +821,42 @@ textarea:user-invalid+.validation {
     display: block;
 }
 
-/* Login Page Styles */
-.login-container {
+/* Home page auth wrapper for logged-in users */
+.home-auth-wrapper {
     display: flex;
-    justify-content: center;
     align-items: center;
-    min-height: 60vh;
-    padding: 2rem 1rem;
+    gap: 1rem;
+    position: fixed;
+    top: 1rem;
+    right: 1.5rem;
+    z-index: 1000;
 }
 
-.login-section {
-    background: white;
-    padding: 3rem 2.5rem;
-    border-radius: 1rem;
-    box-shadow: 0 4px 20px rgba(9,39,58,0.08);
-    max-width: 450px;
-    width: 100%;
-    border: 1px solid rgba(9,39,58,0.06);
-}
-
-.login-title {
-    font-family: "Minion Pro", Georgia, 'Times New Roman', serif;
-    font-weight: 700;
-    font-size: 2rem;
+.home-greeting {
     color: #09273a;
-    margin: 0 0 0.5rem 0;
-    text-align: center;
-}
-
-.login-subtitle {
-    color: #555;
+    font-weight: 700;
     font-size: 0.95rem;
-    margin: 0 0 2rem 0;
-    text-align: center;
-    line-height: 1.5;
+    white-space: nowrap;
 }
 
-.login-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
+/* Outfits page greeting */
+.outfit-greeting {
+    color: #09273a;
+    font-weight: 700;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    margin-left: 0.5rem;
 }
 
-.login-form .form-group {
+/* Outfits nav left section to group home icon and greeting */
+.outfits-left {
     display: flex;
-    flex-direction: column;
+    align-items: center;
     gap: 0.5rem;
-}
-
-.login-form label {
-    font-weight: 600;
-    color: #09273a;
-    font-size: 0.95rem;
-}
-
-.login-form input {
-    padding: 0.75rem 1rem;
-    border: 2px solid #e0e0e0;
-    border-radius: 0.5rem;
-    font-size: 1rem;
-    font-family: "Niveau Grotesk", "Helvetica Neue", Arial, sans-serif;
-    transition: border-color 0.2s;
-}
-
-.login-form input:focus {
-    outline: none;
-    border-color: #09273a;
-}
-
-.login-submit-button {
-    background: #09273a;
-    color: white;
-    padding: 0.85rem 1.5rem;
-    border: none;
-    border-radius: 0.6rem;
-    font-weight: 700;
-    font-size: 1rem;
-    cursor: pointer;
-    margin-top: 0.5rem;
-    transition: background-color 0.2s;
-}
-
-.login-submit-button:hover {
-    background-color: #072033;
-}
-
-.login-footer-text {
-    text-align: center;
-    margin-top: 1.5rem;
-    color: #555;
-    font-size: 0.9rem;
-}
-
-.signup-link {
-    color: #09273a;
-    font-weight: 600;
-    text-decoration: none;
-}
-
-.signup-link:hover {
-    text-decoration: underline;
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 1050;
 }
 
 /* All code generated with the help of GitHub Copilot with minor modifications by Ankie Chen. */

@@ -16,7 +16,9 @@
   <div class="top-space"></div>
 
   <header class="site-header">
-    <a class="profile-button" href="/login">Login</a>
+    <div id="authContainer">
+      <a class="profile-button" href="/login">Login</a>
+    </div>
   </header>
 
   <main>
@@ -53,6 +55,71 @@
     <br>  
     © 2025 Ankie Chen.
   </footer>
+
+  <script>
+    // Check if user is logged in and display profile menu instead of login button
+    async function initAuth() {
+      try {
+        const response = await fetch('/user')
+        if (response.ok) {
+          const user = await response.json()
+          const authContainer = document.getElementById('authContainer')
+          
+          // Create profile menu for logged-in users
+          authContainer.innerHTML = `
+            <div class="home-auth-wrapper">
+              <span class="home-greeting">Hello, ${user.nickname || user.name || 'User'}</span>
+              <div class="nav-icon profile-icon" id="profileMenuWrapper" title="Profile" tabindex="0">
+                <img src="profile.png" alt="Profile" />
+                <div class="profile-dropdown" id="profileDropdown" aria-hidden="true">
+                  <a href="/outfits.html" class="dropdown-item">Outfits</a>
+                  <a href="#" class="dropdown-item logout-link">Log Out</a>
+                </div>
+              </div>
+            </div>
+          `
+          
+          // Set up profile dropdown functionality
+          const profileWrapper = document.getElementById('profileMenuWrapper')
+          const profileDropdown = document.getElementById('profileDropdown')
+          const logoutLink = profileDropdown.querySelector('.logout-link')
+          
+          function hideProfileDropdown() {
+            profileDropdown.style.display = 'none'
+            profileDropdown.setAttribute('aria-hidden', 'true')
+          }
+          function showProfileDropdown() {
+            profileDropdown.style.display = 'block'
+            profileDropdown.setAttribute('aria-hidden', 'false')
+          }
+          
+          profileWrapper.addEventListener('click', (ev) => {
+            ev.stopPropagation()
+            const isOpen = profileDropdown.getAttribute('aria-hidden') === 'false'
+            if (isOpen) hideProfileDropdown()
+            else showProfileDropdown()
+          })
+          
+          document.addEventListener('click', (ev) => {
+            if (!profileWrapper.contains(ev.target)) hideProfileDropdown()
+          })
+          
+          document.addEventListener('keydown', (ev) => {
+            if (ev.key === 'Escape') hideProfileDropdown()
+          })
+          
+          logoutLink.addEventListener('click', (ev) => {
+            ev.preventDefault()
+            window.location.href = '/logout'
+          })
+        }
+      } catch (error) {
+        console.log('User not authenticated or error fetching user info')
+      }
+    }
+    
+    initAuth()
+  </script>
 
 </body>
 </html>

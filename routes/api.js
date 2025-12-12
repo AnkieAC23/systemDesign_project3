@@ -166,8 +166,20 @@ router.delete('/outfits/:id', async (req, res) => {
     }
 })
 
-
-
+// ----- GET CURRENT USER -----
+// Get the current authenticated user's information
+router.get('/user', (req, res) => {
+    try {
+        if (req.oidc && req.oidc.user) {
+            res.send(req.oidc.user)
+        } else {
+            res.status(401).send({ error: 'Not authenticated' })
+        }
+    } catch (err) {
+        console.error('GET /user error:', err)
+        res.status(500).send({ error: 'Failed to get user', details: err.message || err })
+    }
+})
 
 // export the api routes for use elsewhere in our app 
 // (e.g. in index.js )

@@ -29,6 +29,13 @@ app.get('/signup', (req, res) => {
     }
   });
 });
+
+// Custom login route that redirects to outfits after authentication
+app.get('/login', (req, res) => {
+  res.oidc.login({
+    returnTo: '/outfits.html'
+  });
+});
 //End of code from Sikkema (2025), https://www.youtube.com/watch?v=TGmxuwR6fNk
 
 // Define root redirect to `home.html` before static middleware so '/' doesn't auto-serve index.html
