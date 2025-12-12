@@ -8,7 +8,8 @@ datasource db {
 }
 
 model outfits {
-  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String
   rating    Int?
   notes     String?
   photoURL  String

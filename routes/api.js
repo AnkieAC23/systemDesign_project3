@@ -31,6 +31,12 @@ router.post('/data', async (req, res) => {
 // Create via /outfits: map incoming frontend fields to Prisma model
 router.post('/outfits', async (req, res) => {
     try {
+        // Check if user is authenticated
+        if (!req.oidc || !req.oidc.user) {
+            return res.status(401).send({ error: 'Not authenticated' })
+        }
+
+        const userId = req.oidc.user.sub
         const payload = req.body || {}
         // Normalize incoming date values: if the client sent a date-only string
         // like 'YYYY-MM-DD', treat it as UTC midnight for consistent storage.
@@ -51,6 +57,7 @@ router.post('/outfits', async (req, res) => {
         }
 
         const data = {
+            userId: userId,
             photoURL: payload.image || payload.photoURL,
             date: payload.date ? normalizeDate(payload.date) : null,
             title: payload.name || payload.title || null,
@@ -72,8 +79,15 @@ router.post('/outfits', async (req, res) => {
 // ----- READ (GET) list ----- 
 router.get('/outfits', async (req, res) => {
     try {
-        // fetch first 100 records from the database with no filter
+        // Check if user is authenticated
+        if (!req.oidc || !req.oidc.user) {
+            return res.status(401).send({ error: 'Not authenticated' })
+        }
+
+        const userId = req.oidc.user.sub
+        // fetch records for this user only
         const result = await prisma[model].findMany({
+            where: { userId: userId },
             take: 100
         })
         res.send(result)
@@ -86,8 +100,19 @@ router.get('/outfits', async (req, res) => {
 // GET single outfit by id
 router.get('/outfits/:id', async (req, res) => {
     try {
+        // Check if user is authenticated
+        if (!req.oidc || !req.oidc.user) {
+            return res.status(401).send({ error: 'Not authenticated' })
+        }
+
+        const userId = req.oidc.user.sub
         const id = req.params.id
-        const item = await prisma[model].findUnique({ where: { id } })
+        const item = await prisma[model].findFirst({ 
+            where: { 
+                id: id,
+                userId: userId 
+            } 
+        })
         if (!item) return res.status(404).send({ error: 'Not found' })
         res.send(item)
     } catch (err) {
@@ -127,9 +152,27 @@ router.get('/search', async (req, res) => {
 // ----- UPDATE (PUT) -----
 router.put('/outfits/:id', async (req, res) => {
     try {
+        // Check if user is authenticated
+        if (!req.oidc || !req.oidc.user) {
+            return res.status(401).send({ error: 'Not authenticated' })
+        }
+
+        const userId = req.oidc.user.sub
         const id = req.params.id
         const payload = req.body || {}
         console.log('PUT /outfits/:id called with id=', id, 'payload=', JSON.stringify(payload).slice(0,1000))
+        
+        // First verify the outfit belongs to this user
+        const existing = await prisma[model].findFirst({
+            where: { 
+                id: id,
+                userId: userId 
+            }
+        })
+        if (!existing) {
+            return res.status(404).send({ error: 'Not found or unauthorized' })
+        }
+
         const data = {}
         if (payload.title !== undefined) data.title = payload.title
         if (payload.notes !== undefined) data.notes = payload.notes
@@ -157,7 +200,25 @@ router.put('/outfits/:id', async (req, res) => {
 // ----- DELETE -----
 router.delete('/outfits/:id', async (req, res) => {
     try {
+        // Check if user is authenticated
+        if (!req.oidc || !req.oidc.user) {
+            return res.status(401).send({ error: 'Not authenticated' })
+        }
+
+        const userId = req.oidc.user.sub
         const id = req.params.id
+        
+        // First verify the outfit belongs to this user
+        const existing = await prisma[model].findFirst({
+            where: { 
+                id: id,
+                userId: userId 
+            }
+        })
+        if (!existing) {
+            return res.status(404).send({ error: 'Not found or unauthorized' })
+        }
+
         const deleted = await prisma[model].delete({ where: { id } })
         res.send(deleted)
     } catch (err) {

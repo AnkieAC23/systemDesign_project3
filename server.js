@@ -36,10 +36,24 @@ app.get('/login', (req, res) => {
     returnTo: '/outfits.html'
   });
 });
+
+// Custom logout route that redirects to home after logout
+app.get('/logout', (req, res) => {
+  res.oidc.logout({
+    returnTo: '/home.html'
+  });
+});
 //End of code from Sikkema (2025), https://www.youtube.com/watch?v=TGmxuwR6fNk
 
-// Define root redirect to `home.html` before static middleware so '/' doesn't auto-serve index.html
-app.get('/', (req, res) => { res.redirect('/home.html') })
+// Define root redirect based on authentication status
+app.get('/', (req, res) => { 
+  if (req.oidc && req.oidc.isAuthenticated()) {
+    res.redirect('/outfits.html')
+  } else {
+    res.redirect('/home.html')
+  }
+})
+
 // Serve static files from /public folder (useful when running Node locally, optional on Vercel).
 app.use(express.static('public'))
 
